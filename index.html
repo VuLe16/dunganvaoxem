@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Clickable Rectangle with Quote Popup</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #111;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Canvas for animated particles */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* Clickable Rectangle */
+        .clickable-rectangle {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            background-color: #00A8FF;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0px 0px 15px rgba(0, 168, 255, 0.8);
+            z-index: 1;
+        }
+
+        .clickable-rectangle:hover {
+            box-shadow: 0px 0px 25px rgba(0, 168, 255, 1);
+        }
+
+        /* Text inside rectangle */
+        .rectangle-text {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Popup message */
+        #popup-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        /* Close button for popup */
+        #close-popup {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #FF3E4D;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Clickable Rectangle -->
+    <div class="clickable-rectangle" onclick="showPopup()">
+        <div class="rectangle-text">Click Me</div>
+    </div>
+
+    <!-- Popup message -->
+    <div id="popup-message">
+        <div>20/10 vui ve nhe con ml</div>
+        <div id="close-popup" onclick="closePopup()">Close</div>
+    </div>
+
+    <script>
+        // Particle animation script
+        const canvas = document.getElementById("particleCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        const numberOfParticles = 100;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Reposition particles when they go off screen
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        // Popup Functions
+        function showPopup() {
+            document.getElementById("popup-message").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup-message").style.display = "none";
+        }
+
+    </script>
+</body>
+</html>
